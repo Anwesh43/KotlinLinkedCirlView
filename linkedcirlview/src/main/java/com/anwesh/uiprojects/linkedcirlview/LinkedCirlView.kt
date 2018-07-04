@@ -196,7 +196,7 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
         fun create(activity : Activity) : LinkedCirlView {
             val view : LinkedCirlView = LinkedCirlView(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }

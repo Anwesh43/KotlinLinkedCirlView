@@ -165,4 +165,27 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             curr.startUpdating(startcb)
         }
     }
+
+    data class Renderer(var view : LinkedCirlView) {
+
+        private val linkedCirl : LinkedCirl = LinkedCirl(0)
+
+        private val animator : LCAnimator = LCAnimator(view)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#BDBDBD"))
+            linkedCirl.draw(canvas, paint)
+            animator.animate {
+                linkedCirl.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            linkedCirl.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }

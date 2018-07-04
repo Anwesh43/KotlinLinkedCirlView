@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.linkedcirlview
  * Created by anweshmishra on 05/07/18.
  */
 
+import android.app.Activity
 import android.view.View
 import android.view.MotionEvent
 import android.content.Context
@@ -188,6 +189,14 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             linkedCirl.startUpdating {
                 animator.start()
             }
+        }
+    }
+
+    companion object {
+        fun create(activity : Activity) : LinkedCirlView {
+            val view : LinkedCirlView = LinkedCirlView(activity)
+            activity.setContentView(view)
+            return view 
         }
     }
 }

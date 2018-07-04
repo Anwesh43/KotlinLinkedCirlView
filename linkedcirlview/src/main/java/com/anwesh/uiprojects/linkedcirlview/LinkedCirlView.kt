@@ -41,7 +41,7 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             if (Math.abs(scales[j] - prevScale) > 1) {
                 scales[j] = prevScale + dir
                 j += dir.toInt()
-                if (j == scales.size - 1 || j == -1) {
+                if (j == scales.size  || j == -1) {
                     j -= dir.toInt()
                     dir = 0f
                     prevScale = scales[j]
@@ -107,8 +107,9 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             val w : Float = canvas.width.toFloat()
             val h : Float = canvas.height.toFloat()
             val gap : Float = 0.9f * w / CIRL_NODES
-            val r : Float = gap/10
+            val r : Float = gap/4
             val index : Int = i % 2
+            prev?.draw(canvas, paint)
             val sf : Int = 1 - 2 * index
             paint.strokeWidth = Math.min(w, h) / 60
             paint.strokeCap = Paint.Cap.ROUND

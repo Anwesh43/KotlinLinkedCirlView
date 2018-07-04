@@ -9,7 +9,9 @@ import android.view.MotionEvent
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
+import android.graphics.Color
 
+val CIRL_NODES : Int = 5
 class LinkedCirlView (ctx : Context) : View (ctx) {
 
     private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -78,6 +80,65 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             if (animated) {
                 animated = false
             }
+        }
+    }
+
+    data class CirlNode (var i : Int, val state : LCState = LCState()) {
+
+        var prev : CirlNode? = null
+
+        var next : CirlNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < CIRL_NODES - 1) {
+                next = CirlNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            val w : Float = canvas.width.toFloat()
+            val h : Float = canvas.height.toFloat()
+            val gap : Float = 0.9f * w / CIRL_NODES
+            val r : Float = gap/10
+            val index : Int = i % 2
+            val sf : Int = 1 - 2 * index
+            paint.strokeWidth = Math.min(w, h) / 60
+            paint.strokeCap = Paint.Cap.ROUND
+            paint.color = Color.parseColor("#f44336")
+            paint.style = Paint.Style.STROKE
+            canvas.save()
+            canvas.translate(0.1f * w + i * gap + gap * state.scales[0], h/2)
+            canvas.drawCircle(0f, 0f, r, paint)
+            canvas.save()
+            canvas.rotate(180f * index + 180f * sf * state.scales[1])
+            canvas.drawLine(-r/3, r/3, r/3, r/3, paint)
+            canvas.restore()
+            canvas.restore()
+        }
+
+        fun update(stopcb : (Float) -> Unit) {
+           state.update(stopcb)
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : CirlNode {
+            var curr : CirlNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
         }
     }
 }

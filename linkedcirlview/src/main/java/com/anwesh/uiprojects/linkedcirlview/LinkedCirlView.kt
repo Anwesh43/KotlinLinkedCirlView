@@ -115,6 +115,7 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             val gap : Float = 0.9f * w / CIRL_NODES
             val r : Float = gap/4
             val index : Int = i % 2
+            val lineGap : Float = 2 * w / (3 * CIRL_NODES)
             prev?.draw(canvas, paint)
             val sf : Int = 1 - 2 * index
             paint.strokeWidth = Math.min(w, h) / 60
@@ -122,13 +123,14 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             paint.color = Color.parseColor("#f44336")
             paint.style = Paint.Style.STROKE
             canvas.save()
-            canvas.translate(0.1f * w + i * gap + gap * state.scales[0], h/2)
+            canvas.translate(0.04f * w + i * gap + gap * state.scales[0], h/2)
             canvas.drawCircle(0f, 0f, r, paint)
             canvas.save()
             canvas.rotate(180f * index + 180f * sf * state.scales[1])
             canvas.drawLine(-r/3, r/3, r/3, r/3, paint)
             canvas.restore()
             canvas.restore()
+            canvas.drawLine(w/6 + i * lineGap, 0.8f * h, w / 6 + i * lineGap + lineGap/2 * (state.scales[0] + state.scales[1]), 0.8f * h, paint)
         }
 
         fun update(stopcb : (Int, Float) -> Unit) {

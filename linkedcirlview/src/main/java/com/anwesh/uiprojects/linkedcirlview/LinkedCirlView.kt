@@ -19,8 +19,14 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
 
     private val renderer : Renderer = Renderer(this)
 
+    var linkedCirlListener : LinkedCirlListener? = null
+
     override fun onDraw(canvas : Canvas) {
         renderer.render(canvas, paint)
+    }
+
+    fun addListener(onComplete : (Int) -> Unit, onReset : (Int) -> Unit) {
+        linkedCirlListener = LinkedCirlListener(onComplete, onReset)
     }
 
     override fun onTouchEvent(event : MotionEvent) : Boolean {
@@ -125,8 +131,10 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             canvas.restore()
         }
 
-        fun update(stopcb : (Float) -> Unit) {
-           state.update(stopcb)
+        fun update(stopcb : (Int, Float) -> Unit) {
+           state.update {
+               stopcb(i, it)
+           }
         }
 
         fun startUpdating(startcb : () -> Unit) {
@@ -156,12 +164,12 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             curr.draw(canvas, paint)
         }
 
-        fun update(stopcb : (Float) -> Unit) {
-            curr.update {
+        fun update(stopcb : (Int, Float) -> Unit) {
+            curr.update {j, scale ->
                 curr = curr.getNext(dir) {
                     dir *= -1
                 }
-                stopcb(it)
+                stopcb(j, scale)
             }
         }
 
@@ -180,8 +188,16 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             canvas.drawColor(Color.parseColor("#BDBDBD"))
             linkedCirl.draw(canvas, paint)
             animator.animate {
-                linkedCirl.update {
+                linkedCirl.update {j, scale ->
                     animator.stop()
+                    when (scale) {
+                        1f -> {
+                            view.linkedCirlListener?.onComplete?.invoke(j)
+                        }
+                        0f -> {
+                            view.linkedCirlListener?.onReset?.invoke(j)
+                        }
+                    }
                 }
             }
         }
@@ -200,4 +216,6 @@ class LinkedCirlView (ctx : Context) : View (ctx) {
             return view
         }
     }
+
+    data class LinkedCirlListener(var onComplete : (Int) -> Unit, var onReset : (Int) -> Unit)
 }
